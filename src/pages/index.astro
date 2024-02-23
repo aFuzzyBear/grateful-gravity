@@ -1,16 +1,24 @@
 ---
-
+	import getVersion from '../utils/getVersion'
+	
+	getVersion('https://www.bbc.co.uk').then((version) => {
+        console.log(version)
+    })
 ---
-
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Astro Form Submission</title>
+</head>
+<body>
+    <h1>Submit a URL</h1>
+    <form action="/api/test.json" method="POST">
+        <label for="url">Enter URL:</label>
+        <input type="text" id="url" name="url" pattern="https?://.+" title="Include http:// or https://" required />
+        <button type="submit">Submit</button>
+    </form>
+</body>
 </html>
