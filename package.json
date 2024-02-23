@@ -3,6 +3,8 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "docker:dev": "docker run -it --rm -v $(pwd):/app -p 3000:3000 getJqueryVersion",
+    "docker:build": "docker build -t getJqueryVersion .",
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
@@ -10,8 +12,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^4.4.3",
     "@astrojs/check": "^0.5.5",
+    "@astrojs/node": "^8.2.0",
+    "astro": "^4.4.3",
+    "puppeteer": "^22.2.0",
     "typescript": "^5.3.3"
   }
 }
