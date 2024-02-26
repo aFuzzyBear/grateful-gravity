@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { checkForJQuery } from '../../utils/getVersion';
-
+//@ts-expect-error
 export const POST: APIRoute = async ({ request }) => {
   let url;
   const contentType = request.headers.get('Content-Type');
@@ -21,7 +21,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  let msg;
+  let msg:string;
   try {
     msg = await checkForJQuery(url);
     // version = 'test';
