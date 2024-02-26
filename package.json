@@ -5,6 +5,7 @@
   "scripts": {
     "docker:dev": "docker run -it --rm -v $(pwd):/app -p 3000:3000 getJqueryVersion",
     "docker:build": "docker build -t getJqueryVersion .",
+    "postinstall": "pnpm puppeteer browsers install chrome",
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
