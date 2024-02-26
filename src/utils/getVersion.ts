@@ -1,4 +1,3 @@
-import normalizeUrl from '../utils/normaliseURL';
 import puppeteer from 'puppeteer';
 
 declare global {
@@ -11,41 +10,44 @@ declare global {
 const launchOpts = process?.env.CHROMIUM_FLAGS
   ? { args: process?.env.CHROMIUM_FLAGS.split(/\s+/) }
   : {};
-const browser = await puppeteer.launch(launchOpts);
-
-export default async function getVersion(url: string) {
-  const context = await browser.createBrowserContext();
-  const page = await context.newPage();
-  const normalizedUrl = normalizeUrl(url);
-
-  let version;
-  function evalVersion() {
-    return page.evaluate(() => {
-      const $ = window.jQuery || window.$;
-      if ($) {
-        return $.fn.jquery;
+  
+  function sanitizeURL(inputURL) {
+    try {
+      let url = new URL(inputURL);
+      return url.toString(); // URL is valid and normalized
+    } catch (error) {
+      // Input is not a valid URL; attempt to prepend "http://" or "https://"
+      try {
+        let url = new URL(`https://${inputURL}`);
+        return url.toString(); // Assume HTTPS if the scheme was missing
+      } catch (error) {
+        throw new Error('Invalid URL provided.');
       }
-    });
+    }
   }
-
+let browser
+export async function checkForJQuery(url) {
+  const cleanURL = sanitizeURL(url)
+  browser = await puppeteer.launch(launchOpts);
+  const page = await browser.newPage();
   try {
-    await page.goto(normalizedUrl, {
+    await page.goto(cleanURL, {
       timeout: 60000,
-      waitUntil: 'domcontentloaded',
+      waitUntil: "domcontentloaded"
     });
-    version = await evalVersion();
-    if (version) return version;
 
-    // Wait longer if version not detected
-    console.log(`Waiting until network idle for ${normalizedUrl}...`);
-    await page.waitForNetworkIdle({ timeout: 60000 });
-    version = await evalVersion();
+    // Evaluate the page to get jQuery version
+    const jQueryVersion = await page.evaluate(() => {
+      // Check if jQuery is defined and return its version
+      return window.jQuery ? window.jQuery.fn.jquery : 'jQuery is not used';
+    });
+    console.log(`Does the site use jQuery?`, jQueryVersion);
+    return jQueryVersion
   } catch (error) {
     throw error;
   } finally {
-    await context.close();
+    await browser.close();
   }
 
-  return version;
 }
-console.log('https://www.bbc.co.uk');
+

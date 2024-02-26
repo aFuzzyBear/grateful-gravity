@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
-// import getVersion from '../utils/getVersion';
-
+import { checkForJQuery } from '../../utils/getVersion';
+//@ts-expect-error
 export const POST: APIRoute = async ({ request }) => {
   let url;
   const contentType = request.headers.get('Content-Type');
@@ -21,10 +21,10 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  let version;
+  let msg:string;
   try {
-    // version = await getVersion(url);
-    version = 'test';
+    msg = await checkForJQuery(url);
+    // version = 'test';
   } catch (error) {
     const message = (error as Error)?.message;
 
@@ -64,12 +64,12 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   console.log(
-    version
-      ? `Detected version ${version} for ${url}`
+    msg
+      ? `Detected version ${msg} for ${url}`
       : `No version detected for ${url}`
   );
 
-  return new Response(JSON.stringify({ version }), {
+  return new Response(JSON.stringify({ version: msg }), {
     status: 200,
     headers: {
       'Content-Type': 'application/json',
